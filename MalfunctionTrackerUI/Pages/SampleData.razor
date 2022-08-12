@@ -1,0 +1,181 @@
+﻿@page "/SampleData"
+@inject ICategoryData categoryData
+@inject IStatusData statusData
+@inject IUserData userData
+@inject IMalfunctionData malfunctionData
+
+<h3>SampleData</h3>
+
+@if (categoriesCreated)
+{
+    <h4>Categories have been created.</h4>
+}
+else
+{
+    <button class="btn btn-primary" @onclick="CreateCategories">Create Categories</button>
+}
+
+@if (statusesCreated)
+{
+    <h4>Statuses have been created.</h4>
+}
+else
+{
+    <button class="btn btn-primary" @onclick="CreateStatuses">Create Statuses</button>
+}
+
+<button class="btn btn-danger" @onclick="GenereateSampleData">Generate sample data</button>
+
+
+
+@code {
+    bool categoriesCreated = false;
+    bool statusesCreated = false;
+
+    private async Task CreateCategories()
+    {
+        var categories = await categoryData.GetAllCategories();
+
+        if(categories?.Count > 0)
+        {
+            categoriesCreated = true;
+            return;
+        }
+
+        CategoryModel cat = new()
+            {
+                CategoryName = "Hardware malfunction",
+                CategoryDescription = "Malfunction on some piece of hardwer"
+            };
+        await categoryData.CreateCategory(cat);
+
+        cat = new()
+            {
+                CategoryName = "Software malfunction",
+                CategoryDescription = "Malfunction on some piece of software"
+            };
+        await categoryData.CreateCategory(cat);
+
+        categoriesCreated = true;
+    }
+
+    private async Task CreateStatuses()
+    {
+        var statuses = await statusData.GetAllStatuses();
+
+        if (statuses?.Count > 0)
+        {
+            statusesCreated = true;
+            return;
+        }
+
+        StatusModel stat = new()
+            {
+                StatusName = "Repaired",
+                StatusDescription = "Malfunction repaired"
+            };
+        await statusData.CreateStatuses(stat);
+
+        stat = new()
+            {
+                StatusName = "In Repair",
+                StatusDescription = "Malfunction in process of reparation"
+            };
+        await statusData.CreateStatuses(stat);
+
+        stat = new()
+            {
+                StatusName = "On Hold",
+                StatusDescription = "Malfunction on hold because of something"
+            };
+        await statusData.CreateStatuses(stat);
+
+        stat = new()
+            {
+                StatusName = "In queue",
+                StatusDescription = "Malfunction will be repaired as soon as possible"
+            };
+        await statusData.CreateStatuses(stat);
+
+        stat = new()
+            {
+                StatusName = "Unrepairable",
+                StatusDescription = "Malfunction can not be repaired, equipmet should be changed completly"
+            };
+        await statusData.CreateStatuses(stat);
+
+        statusesCreated = true;
+    }
+
+    private async Task GenereateSampleData()
+    {
+        UserModel user = new()
+            {
+                FirstName = "Josip",
+                LastName = "Radoš",
+                EmailAddress = "josip.rados@test.hr",
+                DisplayName = "JRados",
+                ObjectIdentifier = "abc-123"
+            };
+        await userData.CreateUser(user);
+
+        var foundUser = await userData.GetUserFromAuthentication("abc-123");
+        var categories = await categoryData.GetAllCategories();
+        var statuses = await statusData.GetAllStatuses();
+
+        MalfunctionModel malfunction = new()
+            {
+                User = new BasicUserModel(foundUser),
+                Category = categories[0],
+                Malfunction = "First Malfunction",
+                Description = "Broken screen",
+                MalfunctionStatus = statuses[1],
+                MaintenanceNotes = "This is note of malfunction"
+            };
+        await malfunctionData.CreateMalfunction(malfunction);
+
+        malfunction = new()
+            {
+                User = new BasicUserModel(foundUser),
+                Category = categories[0],
+                Malfunction = "Second Malfunction",
+                Description = "Broken Desk's leg",
+                MalfunctionStatus = statuses[1],
+                MaintenanceNotes = "This is note of malfunction"
+            };
+        await malfunctionData.CreateMalfunction(malfunction);
+
+        malfunction = new()
+            {
+                User = new BasicUserModel(foundUser),
+                Category = categories[1],
+                Malfunction = "Third Malfunction",
+                Description = "Software not working",
+                MalfunctionStatus = statuses[2],
+                MaintenanceNotes = "This is note of malfunction"
+            };
+        await malfunctionData.CreateMalfunction(malfunction);
+
+        malfunction = new()
+            {
+                User = new BasicUserModel(foundUser),
+                Category = categories[0],
+                Malfunction = "Forth Malfunction",
+                Description = "Broken Chair's leg",
+                MalfunctionStatus = statuses[3],
+                MaintenanceNotes = "This is note of malfunction"
+            };
+        await malfunctionData.CreateMalfunction(malfunction);
+
+        malfunction = new()
+            {
+                User = new BasicUserModel(foundUser),
+                Category = categories[1],
+                Malfunction = "Fifth Malfunction",
+                Description = "Software not working",
+                MalfunctionStatus = statuses[4],
+                MaintenanceNotes = "This is note of malfunction"
+            };
+        await malfunctionData.CreateMalfunction(malfunction);
+    }
+}

@@ -1,0 +1,12 @@
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\bin\Debug\net6.0\MalfunctionTrackerData.deps.json
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\bin\Debug\net6.0\MalfunctionTrackerData.dll
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\bin\Debug\net6.0\MalfunctionTrackerData.pdb
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\obj\Debug\net6.0\MalfunctionTrackerData.csproj.AssemblyReference.cache
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\obj\Debug\net6.0\MalfunctionTrackerData.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\obj\Debug\net6.0\MalfunctionTrackerData.AssemblyInfoInputs.cache
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\obj\Debug\net6.0\MalfunctionTrackerData.AssemblyInfo.cs
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\obj\Debug\net6.0\MalfunctionTrackerData.csproj.CoreCompileInputs.cache
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\obj\Debug\net6.0\MalfunctionTrackerData.dll
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\obj\Debug\net6.0\refint\MalfunctionTrackerData.dll
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\obj\Debug\net6.0\MalfunctionTrackerData.pdb
+C:\Users\Josip\source\repos\MalfunctionTracker\MalfunctionTrackerData\obj\Debug\net6.0\ref\MalfunctionTrackerData.dll

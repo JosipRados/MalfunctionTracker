@@ -1,0 +1,196 @@
+﻿@page "/"
+
+@inject ICategoryData categoryData
+@inject IStatusData statusData
+@inject IMalfunctionData malfunctionData
+@inject IUserData userData
+@inject NavigationManager navManager
+@inject ProtectedSessionStorage sessionStorage
+
+<h1>Malfunctions</h1>
+<div>
+    <button>Report malfunction</button>
+</div>
+
+<div>
+    <div >@malfunctions?.Count Malfunctions</div>
+    <div>
+        <button @onclick="(() => OrderByNew(true))">Newer</button>
+        <button @onclick="(() => OrderByNew(false))">Older</button>
+    </div>
+    <div>
+        <input type="text" placeholder="Search" 
+            aria-label="Search box"lab 
+            @oninput="((txt) => OnSearchInput((string)txt.Value))" />
+    </div>
+</div>
+
+<div>
+    <div>
+        @if (malfunctions is not null)
+        {
+            <Virtualize Items="@malfunctions" Context="m" OverscanCount="10">
+                <div>
+                    <div>
+                        <div @onclick="(() => OpenDetails(m))">@m.Malfunction</div>
+                        <div>
+                            <div @onclick="(() => OpenDetails(m))">@m.Category?.CategoryName</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div>
+                            @m.MalfunctionStatus?.StatusName
+                        </div>
+                    </div>
+                </div>
+            </Virtualize>
+        }
+    </div>
+
+    <div>
+        @if(categories is not null)
+        {
+            <div>
+                <span>Category</span>
+                <div @onclick="(() => OnCategoryClick())">All</div>
+                @foreach(var c in categories)
+                {
+                    <div @onclick="(() => OnCategoryClick(c.CategoryName))">@c.CategoryName</div>
+                }
+            </div>
+        }
+        @if(statuses is not null)
+        {
+            <div>
+                <span>Status</span>
+                <div @onclick="(() => OnStatusClick())">All</div>
+            @foreach (var s in statuses)
+            {
+                        <div @onclick="(() => OnStatusClick(s.StatusName))">@s.StatusName</div>
+            }
+            </div>
+        }
+    </div>
+</div>
+
+
+
+
+
+
+
+@code {
+    private List<MalfunctionModel> malfunctions;
+    private List<CategoryModel> categories;
+    private List<StatusModel> statuses;
+
+    private string selectedCategory = "All";
+    private string selectedStatus = "All";
+    private string searchString = "";
+    bool isSortedByNew = true;
+
+    protected async override Task OnInitializedAsync()
+    {
+        categories = await categoryData.GetAllCategories();
+        statuses = await statusData.GetAllStatuses();
+    }
+
+    protected async override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(firstRender)
+        {
+            await LoadFilterState();
+            await FilterMalfunctions();
+            StateHasChanged();
+        }
+    }
+
+    private async Task LoadFilterState()
+    {
+        var stringResults = await sessionStorage.GetAsync<string>(nameof(selectedCategory));
+        selectedCategory = stringResults.Success ? stringResults.Value : "All";
+
+        stringResults = await sessionStorage.GetAsync<string>(nameof(selectedStatus));
+        selectedStatus = stringResults.Success ? stringResults.Value : "All";
+
+        stringResults = await sessionStorage.GetAsync<string>(nameof(searchString));
+        searchString = stringResults.Success ? stringResults.Value : "";
+
+        var boolResults = await sessionStorage.GetAsync<bool>(nameof(isSortedByNew));
+        isSortedByNew = boolResults.Success ? boolResults.Value : true;
+    }
+
+    private async Task SaveFilterState()
+    {
+        await sessionStorage.SetAsync(nameof(selectedCategory), selectedCategory);
+        await sessionStorage.SetAsync(nameof(selectedStatus), selectedStatus);
+        await sessionStorage.SetAsync(nameof(searchString), searchString);
+        await sessionStorage.SetAsync(nameof(isSortedByNew), isSortedByNew);
+    }
+
+    private async Task FilterMalfunctions()
+    {
+        var output = await malfunctionData.GetAllAcknowledgedMalfunctions();
+
+        if(selectedCategory != "All")
+        {
+            output = output.Where(m => m.Category?.CategoryName == selectedCategory).ToList();
+        }
+
+        if (selectedStatus != "All")
+        {
+            output = output.Where(m => m.MalfunctionStatus?.StatusName == selectedStatus).ToList();
+        }
+
+        if(string.IsNullOrWhiteSpace(searchString) == false)
+        {
+            output = output.Where(m =>
+                m.Malfunction.Contains(searchString, StringComparison.InvariantCultureIgnoreCase) ||
+                m.Description.Contains(searchString, StringComparison.InvariantCultureIgnoreCase)
+            ).ToList();
+        }
+
+        if(isSortedByNew)
+        {
+            output = output.OrderByDescending(m => m.DateCreated).ToList();
+        }
+        else
+        {
+            output = output.OrderBy(m => m.DateCreated).ToList();
+        }
+
+        malfunctions = output;
+
+        await SaveFilterState();
+    }
+
+    private async Task OrderByNew(bool isNew)
+    {
+        isSortedByNew = isNew;
+        await FilterMalfunctions();
+    }
+
+    private async Task OnSearchInput(string searchInput)
+    {
+        searchString = searchInput;
+        await FilterMalfunctions();
+    }
+
+    private async Task OnCategoryClick(string category = "All")
+    {
+        selectedCategory = category;
+        await FilterMalfunctions();
+    }
+
+    private async Task OnStatusClick(string status = "All")
+    {
+        selectedStatus = status;
+        await FilterMalfunctions();
+    }
+
+    private void OpenDetails(MalfunctionModel malfunction)
+    {
+        navManager.NavigateTo($"/Details/{malfunction.Id}");
+    }
+}
+
