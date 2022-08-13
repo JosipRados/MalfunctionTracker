@@ -4,6 +4,7 @@
 @inject IStatusData statusData
 @inject IMalfunctionData malfunctionData
 @inject IUserData userData
+@inject IPriorityData priorityData
 @inject NavigationManager navManager
 @inject ProtectedSessionStorage sessionStorage
 
@@ -31,6 +32,9 @@
         {
             <Virtualize Items="@malfunctions" Context="m" OverscanCount="10">
                 <div>
+                    <div>
+                        <div>@m.Priority?.PriorityName</div>
+                    </div>
                     <div>
                         <div @onclick="(() => OpenDetails(m))">@m.Malfunction</div>
                         <div>
@@ -70,6 +74,17 @@
             }
             </div>
         }
+        @if (priorities is not null)
+        {
+            <div>
+                <span>Priority</span>
+                <div @onclick="(() => OnPriorityClick())">All</div>
+                @foreach (var p in priorities)
+                {
+                    <div @onclick="(() => OnPriorityClick(p.PriorityName))">@p.PriorityName</div>
+                }
+            </div>
+        }
     </div>
 </div>
 
@@ -83,9 +98,11 @@
     private List<MalfunctionModel> malfunctions;
     private List<CategoryModel> categories;
     private List<StatusModel> statuses;
+    private List<PriorityModel> priorities;
 
     private string selectedCategory = "All";
     private string selectedStatus = "All";
+    private string selectedPriority = "All";
     private string searchString = "";
     bool isSortedByNew = true;
 
@@ -93,6 +110,7 @@
     {
         categories = await categoryData.GetAllCategories();
         statuses = await statusData.GetAllStatuses();
+        priorities = await priorityData.GetAllPriorities();
     }
 
     protected async override Task OnAfterRenderAsync(bool firstRender)
@@ -113,6 +131,9 @@
         stringResults = await sessionStorage.GetAsync<string>(nameof(selectedStatus));
         selectedStatus = stringResults.Success ? stringResults.Value : "All";
 
+        stringResults = await sessionStorage.GetAsync<string>(nameof(selectedPriority));
+        selectedPriority = stringResults.Success ? stringResults.Value : "All";
+
         stringResults = await sessionStorage.GetAsync<string>(nameof(searchString));
         searchString = stringResults.Success ? stringResults.Value : "";
 
@@ -126,6 +147,7 @@
         await sessionStorage.SetAsync(nameof(selectedStatus), selectedStatus);
         await sessionStorage.SetAsync(nameof(searchString), searchString);
         await sessionStorage.SetAsync(nameof(isSortedByNew), isSortedByNew);
+        await sessionStorage.SetAsync(nameof(selectedPriority), selectedPriority);
     }
 
     private async Task FilterMalfunctions()
@@ -140,6 +162,11 @@
         if (selectedStatus != "All")
         {
             output = output.Where(m => m.MalfunctionStatus?.StatusName == selectedStatus).ToList();
+        }
+
+        if (selectedPriority != "All")
+        {
+            output = output.Where(m => m.Priority?.PriorityName == selectedPriority).ToList();
         }
 
         if(string.IsNullOrWhiteSpace(searchString) == false)
@@ -185,6 +212,12 @@
     private async Task OnStatusClick(string status = "All")
     {
         selectedStatus = status;
+        await FilterMalfunctions();
+    }
+
+    private async Task OnPriorityClick(string priority = "All")
+    {
+        selectedPriority = priority;
         await FilterMalfunctions();
     }
 

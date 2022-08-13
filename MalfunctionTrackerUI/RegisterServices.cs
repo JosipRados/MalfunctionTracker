@@ -15,6 +15,7 @@ namespace MalfunctionTrackerUI
             builder.Services.AddSingleton<IStatusData, MongoStatusData>();
             builder.Services.AddSingleton<IMalfunctionData, MongoMalfunctionData>();
             builder.Services.AddSingleton<IUserData, MongoUserData>(); //Nemamo nikakve zapise u pojedinog korisnika zato singl.
+            builder.Services.AddSingleton<IPriorityData, MongoPriorityData>();
         }
     }
 }

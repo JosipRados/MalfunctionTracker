@@ -1,0 +1,200 @@
+﻿@page "/Profile"
+@inject IMalfunctionData malfunctionData
+@inject IUserData userData
+@inject NavigationManager navManager
+
+
+<h1>My Profile</h1>
+
+<div>
+    <div>
+        <button @onclick="ClosePage"></button>
+    </div>
+</div>
+
+<div>
+    <h2>My Account</h2>
+    <p>
+        <a href="#">
+            Edim my profile
+        </a>
+    </p>
+</div>
+
+@if(acknowledged?.Count > 0)
+{
+    <div>
+        <h2>Acknowledged Malfunctions</h2>
+        <p>These are malfunctions that are in queue for repairment.</p>
+
+        @foreach (var m in acknowledged)
+        {
+            <hr />
+            <div>
+                @m.Malfunction
+            </div>
+            <p>
+                @m.DateCreated.ToString("MM.dd.yyyy")
+            </p>
+            <p>
+                @m.Priority.PriorityName
+            </p>
+            <p>
+                @m.Category.CategoryName
+            </p>
+            <p>
+                @m.Description
+            </p>
+            @if (m.MalfunctionStatus is not null)
+            {
+                <div>
+                    @m.MalfunctionStatus.StatusName
+                </div>
+                <p>
+                    @((MarkupString)m.MaintenanceNotes)
+                </p>
+            }
+        }
+    </div>
+}
+
+@if (archived?.Count > 0)
+{
+    <div>
+        <h2>Archived Malfunctions</h2>
+        <p>These are malfunctions that are archived.</p>
+
+        @foreach (var m in archived)
+        {
+            <hr />
+            <div>
+                @m.Malfunction
+            </div>
+            <p>
+                @m.DateCreated.ToString("MM.dd.yyyy")
+            </p>
+            <p>
+                @m.Priority.PriorityName
+            </p>
+            <p>
+                @m.Category.CategoryName
+            </p>
+            <p>
+                @m.Description
+            </p>
+            @if (m.MalfunctionStatus is not null)
+            {
+                <div>
+                    @m.MalfunctionStatus.StatusName
+                </div>
+                <p>
+                    @((MarkupString)m.MaintenanceNotes)
+                </p>
+            }
+        }
+    </div>
+}
+
+@if (pending?.Count > 0)
+{
+    <div>
+        <h2>Pending Malfunctions</h2>
+        <p>These are malfunctions that are pending acknowledgment.</p>
+
+        @foreach (var m in pending)
+        {
+            <hr />
+            <div>
+                @m.Malfunction
+            </div>
+            <p>
+                @m.DateCreated.ToString("MM.dd.yyyy")
+            </p>
+            <p>
+                @m.Priority.PriorityName
+            </p>
+            <p>
+                @m.Category.CategoryName
+            </p>
+            <p>
+                @m.Description
+            </p>
+            @if (m.MalfunctionStatus is not null)
+            {
+                <div>
+                    @m.MalfunctionStatus.StatusName
+                </div>
+                <p>
+                    @((MarkupString)m.MaintenanceNotes)
+                </p>
+            }
+        }
+    </div>
+}
+
+@if (rejected?.Count > 0)
+{
+    <div>
+        <h2>Rejected Malfunctions</h2>
+        <p>These are malfunctions that are rejected by maintenance.</p>
+
+        @foreach (var m in rejected)
+        {
+            <hr />
+            <div>
+                @m.Malfunction
+            </div>
+            <p>
+                @m.DateCreated.ToString("MM.dd.yyyy")
+            </p>
+            <p>
+                @m.Priority.PriorityName
+            </p>
+            <p>
+                @m.Category.CategoryName
+            </p>
+            <p>
+                @m.Description
+            </p>
+            @if (m.MalfunctionStatus is not null)
+            {
+                <div>
+                    @m.MalfunctionStatus.StatusName
+                </div>
+                <p>
+                    @((MarkupString)m.MaintenanceNotes)
+                </p>
+            }
+        }
+    </div>
+}
+
+@code {
+    private UserModel loggedInUser;
+    private List<MalfunctionModel> submissions;
+    private List<MalfunctionModel> acknowledged;
+    private List<MalfunctionModel> archived;
+    private List<MalfunctionModel> pending;
+    private List<MalfunctionModel> rejected;
+
+    protected async override Task OnInitializedAsync()
+    {
+        loggedInUser = await userData.GetUserFromAuthentication("abc-123");
+
+        var result = await malfunctionData.GetUsersMalfunctions(loggedInUser.Id);
+
+        if(loggedInUser is not null && result is not null)
+        {
+            submissions = result.OrderByDescending(s => s.DateCreated).ToList();
+            acknowledged = submissions.Where(s => s.Acknowledged && s.Archived == false && s.Rejected == false).ToList();
+            archived = submissions.Where(s => s.Archived && s.Rejected == false).ToList();
+            pending = submissions.Where(s => s.Acknowledged == false && s.Rejected == false).ToList();
+            rejected = submissions.Where(s => s.Rejected).ToList();
+        }
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/");
+    }
+}

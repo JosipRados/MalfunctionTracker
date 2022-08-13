@@ -3,6 +3,7 @@
 @inject IStatusData statusData
 @inject IUserData userData
 @inject IMalfunctionData malfunctionData
+@inject IPriorityData priorityData
 
 <h3>SampleData</h3>
 
@@ -25,12 +26,14 @@ else
 }
 
 <button class="btn btn-danger" @onclick="GenereateSampleData">Generate sample data</button>
+<button class="btn btn-danger" @onclick="GeneratePriorities">Generate Priorities</button>
 
 
 
 @code {
     bool categoriesCreated = false;
     bool statusesCreated = false;
+    bool prioritiesCreated = false;
 
     private async Task CreateCategories()
     {
@@ -57,6 +60,38 @@ else
         await categoryData.CreateCategory(cat);
 
         categoriesCreated = true;
+    }
+
+    private async Task GeneratePriorities()
+    {
+        var priorities = await priorityData.GetAllPriorities();
+
+        if (priorities?.Count > 0)
+        {
+            prioritiesCreated = true;
+            return;
+        }
+
+        PriorityModel priority = new()
+            {
+                PriorityName = "High Priority",
+                PriorityDescription = "Very important malfunction"
+            };
+        await priorityData.CreatePriority(priority);
+
+        priority = new()
+            {
+                PriorityName = "Medium Priority",
+                PriorityDescription = "Normal priority malfunction"
+            };
+        await priorityData.CreatePriority(priority);
+
+        priority = new()
+            {
+                PriorityName = "Low Priority",
+                PriorityDescription = "Not important malfunction"
+            };
+        await priorityData.CreatePriority(priority);
     }
 
     private async Task CreateStatuses()
@@ -122,6 +157,7 @@ else
         var foundUser = await userData.GetUserFromAuthentication("abc-123");
         var categories = await categoryData.GetAllCategories();
         var statuses = await statusData.GetAllStatuses();
+        var priorities = await priorityData.GetAllPriorities();
 
         MalfunctionModel malfunction = new()
             {
@@ -130,7 +166,8 @@ else
                 Malfunction = "First Malfunction",
                 Description = "Broken screen",
                 MalfunctionStatus = statuses[1],
-                MaintenanceNotes = "This is note of malfunction"
+                MaintenanceNotes = "This is note of malfunction",
+                Priority = priorities[0]
             };
         await malfunctionData.CreateMalfunction(malfunction);
 
@@ -141,7 +178,8 @@ else
                 Malfunction = "Second Malfunction",
                 Description = "Broken Desk's leg",
                 MalfunctionStatus = statuses[1],
-                MaintenanceNotes = "This is note of malfunction"
+                MaintenanceNotes = "This is note of malfunction",
+                Priority = priorities[1]
             };
         await malfunctionData.CreateMalfunction(malfunction);
 
@@ -152,7 +190,8 @@ else
                 Malfunction = "Third Malfunction",
                 Description = "Software not working",
                 MalfunctionStatus = statuses[2],
-                MaintenanceNotes = "This is note of malfunction"
+                MaintenanceNotes = "This is note of malfunction",
+                Priority = priorities[2]
             };
         await malfunctionData.CreateMalfunction(malfunction);
 
@@ -163,7 +202,8 @@ else
                 Malfunction = "Forth Malfunction",
                 Description = "Broken Chair's leg",
                 MalfunctionStatus = statuses[3],
-                MaintenanceNotes = "This is note of malfunction"
+                MaintenanceNotes = "This is note of malfunction",
+                Priority = priorities[1]
             };
         await malfunctionData.CreateMalfunction(malfunction);
 
@@ -174,7 +214,8 @@ else
                 Malfunction = "Fifth Malfunction",
                 Description = "Software not working",
                 MalfunctionStatus = statuses[4],
-                MaintenanceNotes = "This is note of malfunction"
+                MaintenanceNotes = "This is note of malfunction",
+                Priority = priorities[0]
             };
         await malfunctionData.CreateMalfunction(malfunction);
     }

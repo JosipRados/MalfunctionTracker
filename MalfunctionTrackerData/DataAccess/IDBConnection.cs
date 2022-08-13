@@ -14,5 +14,7 @@ namespace MalfunctionTrackerData.DataAccess
         string StatusCollectionName { get; }
         IMongoCollection<UserModel> UserCollection { get; set; }
         string UserCollectionName { get; }
+        string PriorityCollectionName { get; }
+        IMongoCollection<PriorityModel> PriorityCollection { get; }
     }
 }

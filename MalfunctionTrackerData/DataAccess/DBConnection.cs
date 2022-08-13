@@ -17,11 +17,13 @@ namespace MalfunctionTrackerData.DataAccess
         public string StatusCollectionName { get; private set; } = "statuses";
         public string UserCollectionName { get; private set; } = "users";
         public string MalfunctionCollectionName { get; private set; } = "malfunctions";
+        public string PriorityCollectionName { get; private set; } = "priorities";
         public MongoClient Client { get; private set; }
         public IMongoCollection<CategoryModel> CategoryCollection { get; private set; }
         public IMongoCollection<StatusModel> StatusCollection { get; private set; }
         public IMongoCollection<UserModel> UserCollection { get; set; }
         public IMongoCollection<MalfunctionModel> MalfunctionCollection { get; private set; }
+        public IMongoCollection<PriorityModel> PriorityCollection { get; private set; }
         #endregion
 
         public DBConnection(IConfiguration config)
@@ -35,6 +37,7 @@ namespace MalfunctionTrackerData.DataAccess
             StatusCollection = _db.GetCollection<StatusModel>(StatusCollectionName);
             UserCollection = _db.GetCollection<UserModel>(UserCollectionName);
             MalfunctionCollection = _db.GetCollection<MalfunctionModel>(MalfunctionCollectionName);
+            PriorityCollection = _db.GetCollection<PriorityModel>(PriorityCollectionName);
         }
     }
 }

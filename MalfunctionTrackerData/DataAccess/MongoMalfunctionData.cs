@@ -36,6 +36,20 @@ namespace MalfunctionTrackerData.DataAccess
             return output;
         }
 
+        public async Task<List<MalfunctionModel>> GetUsersMalfunctions(string userId)
+        {
+            var output = _cache.Get<List<MalfunctionModel>>(userId);
+            if(output is null)
+            {
+                var results = await _malfunction.FindAsync(m => m.User.Id == userId);
+                output = results.ToList();
+
+                _cache.Set(userId, output, TimeSpan.FromMinutes(1));
+            }
+
+            return output;
+        }
+
         public async Task<List<MalfunctionModel>> GetAllAcknowledgedMalfunctions()
         {
             var output = await GetAllMalfunctions();

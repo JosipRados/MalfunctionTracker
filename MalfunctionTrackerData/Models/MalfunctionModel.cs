@@ -22,5 +22,6 @@ namespace MalfunctionTrackerData.Models
         public bool Acknowledged { get; set; } = false;
         public bool Archived { get; set; } = false;
         public bool Rejected { get; set; } = false;
+        public PriorityModel Priority { get; set; }
     }
 }

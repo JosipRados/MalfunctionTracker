@@ -1,0 +1,114 @@
+﻿@page "/Create"
+@using MalfunctionTrackerUI.Components
+@using MalfunctionTrackerUI.Models
+@inject ICategoryData categoryData
+@inject IPriorityData priorityData
+@inject IMalfunctionData malfunctionData
+@inject IUserData userData
+@inject NavigationManager navManager
+
+<h1>Make A Malfunction</h1>
+
+<div>
+    <div>
+        <div>
+            <button @onclick = "ClosePage"></button>
+        </div>
+        @if(categories is not null)
+        {
+
+        }
+        <EditForm Model="newMalfunction" OnValidSubmit="CreateMalfunction">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+            <div>
+                <label for="malfunction-text">Malfunction</label>
+                <div>What is the malfunction</div>
+                <InputText id="malfunction-text" @bind-Value="newMalfunction.Malfunction"/>
+            </div>
+
+            <div>
+                <label for="category">Category</label>
+                <div>Choose one category.</div>
+                <div>
+                    <MyInputRadioGroup id="category" @bind-Value="newMalfunction.CategoryId">
+                        @foreach(var c in categories)
+                        {
+                            <div>
+                                <InputRadio Value="@c.Id" id="@c.Id" />
+                                <label for="@c.Id">@c.CategoryName - @c.CategoryDescription</label>
+                            </div>
+                        }
+                    </MyInputRadioGroup>
+                </div>
+            </div>
+
+            <div>
+                <label for="priority">Prioriry</label>
+                <div>Choose one priority.</div>
+                <div>
+                    <MyInputRadioGroup id="priority" @bind-Value="newMalfunction.PriorityId">
+                        @foreach (var p in priorities)
+                        {
+                            <div>
+                                <InputRadio Value="@p.Id" id="@p.Id" />
+                                <label for="@p.Id">@p.PriorityName - @p.PriorityDescription</label>
+                            </div>
+                        }
+                    </MyInputRadioGroup>
+                </div>
+            </div>
+
+            <div>
+                <label for="description">Description</label>
+                <div>Describe malfunction</div>
+                <InputText id="description" @bind-Value="newMalfunction.Description" />
+            </div>
+            <div>
+                <button type="submit">Report</button>
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+
+
+@code {
+    private CreateMalfunctionModel newMalfunction = new();
+    private List<CategoryModel> categories;
+    private List<PriorityModel> priorities;
+    private UserModel loggedInUser;
+
+    protected async override Task OnInitializedAsync()
+    {
+        categories = await categoryData.GetAllCategories();
+        priorities = await priorityData.GetAllPriorities();
+        loggedInUser = await userData.GetUserFromAuthentication("abc-123");
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/");
+    }
+
+    private async Task CreateMalfunction()
+    {
+        MalfunctionModel malfunction = new();
+        malfunction.Malfunction = newMalfunction.Malfunction;
+        malfunction.Description = newMalfunction.Description;
+        malfunction.User = new BasicUserModel(loggedInUser);
+        malfunction.Category = categories.Where(c => c.Id == newMalfunction.CategoryId).FirstOrDefault();
+        malfunction.Priority = priorities.Where(p => p.Id == newMalfunction.PriorityId).FirstOrDefault();
+
+        if (malfunction.Category is null || malfunction.Priority is null)
+        {
+            newMalfunction.CategoryId = "";
+            newMalfunction.PriorityId = "";
+            return;
+        }
+
+        await malfunctionData.CreateMalfunction(malfunction);
+        newMalfunction = new();
+        ClosePage();
+    }
+}
