@@ -1,0 +1,68 @@
+﻿@page "/details/{Id}"
+@inject IMalfunctionData malfunctionData
+@inject NavigationManager navManager
+
+
+<h3>Details</h3>
+
+<div>
+    <div>
+        @if(malfunction is not null)
+        {
+            <div>
+                <div>
+                    <div>
+                        <div>@malfunction.DateCreated.ToString("MM.dd.yyyy")</div>
+                    </div>
+                </div>
+                <div>
+                    <div>@malfunction.Malfunction</div>
+                    <div>@malfunction.User.DisplayName</div>
+                    <div>@malfunction.Description</div>
+                    <div>
+                        @malfunction.Category.CategoryName
+                    </div>
+                </div>
+                <div>
+                    <button @onclick="ClosePage">Close</button>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@if (malfunction?.MalfunctionStatus is not null)
+{
+    <div>
+        <div>
+            <div></div>
+            <div>
+                <div>
+                    @malfunction.MalfunctionStatus.StatusName
+                </div>
+                <div>
+                    @((MarkupString)malfunction.MaintenanceNotes)
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private MalfunctionModel malfunction;
+
+    protected async override Task OnInitializedAsync()
+    {
+        malfunction = await malfunctionData.GetMalfunction(Id);
+    }
+
+    private void ClosePage()
+    {
+        navManager.NavigateTo("/");
+    }
+}
