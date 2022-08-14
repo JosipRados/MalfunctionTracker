@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.UI;
 using System.Runtime.CompilerServices;
 
 namespace MalfunctionTrackerUI
@@ -9,11 +10,15 @@ namespace MalfunctionTrackerUI
         public static void ConfigureServices(this WebApplicationBuilder builder)
         {
             builder.Services.AddRazorPages();
-            builder.Services.AddServerSideBlazor();
+            builder.Services.AddServerSideBlazor().AddMicrosoftIdentityConsentHandler();
             builder.Services.AddMemoryCache();
+            builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
+
+            
+
 
             builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
+                .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAdB2C"));
 
             builder.Services.AddAuthorization(options =>
             {

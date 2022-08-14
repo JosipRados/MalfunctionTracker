@@ -1,6 +1,8 @@
 ﻿@page "/Create"
+@attribute [Authorize]
 @using MalfunctionTrackerUI.Components
 @using MalfunctionTrackerUI.Models
+@inject AuthenticationStateProvider authProvider
 @inject ICategoryData categoryData
 @inject IPriorityData priorityData
 @inject IMalfunctionData malfunctionData
@@ -83,7 +85,9 @@
     {
         categories = await categoryData.GetAllCategories();
         priorities = await priorityData.GetAllPriorities();
-        loggedInUser = await userData.GetUserFromAuthentication("abc-123");
+
+
+        loggedInUser = await authProvider.GetUserFromAuth(userData);
     }
 
     private void ClosePage()
