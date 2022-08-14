@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.Identity.Web;
+using System.Runtime.CompilerServices;
 
 namespace MalfunctionTrackerUI
 {
@@ -9,6 +11,17 @@ namespace MalfunctionTrackerUI
             builder.Services.AddRazorPages();
             builder.Services.AddServerSideBlazor();
             builder.Services.AddMemoryCache();
+
+            builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+                .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAdB2C"));
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy =>
+                {
+                    policy.RequireClaim("jobTitle", "Admin");
+                });
+            });
 
             builder.Services.AddSingleton<IDBConnection, DBConnection>();
             builder.Services.AddSingleton<ICategoryData, MongoCategoryData>();
