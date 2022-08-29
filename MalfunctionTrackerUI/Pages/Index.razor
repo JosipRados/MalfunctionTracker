@@ -8,41 +8,41 @@
 @inject NavigationManager navManager
 @inject ProtectedSessionStorage sessionStorage
 
-<h1>Malfunctions</h1>
-<div>
-    <button>Report malfunction</button>
+<h1 class="page-heading text-uppercase mb-4">Malfunctions</h1>
+<div class="malfunction-container">
+    <button @onclick="LoadCreatePage" class="malfunction-btn btn btn-outline-light btn-lg text-uppercase">Report malfunction</button>
 </div>
 
-<div>
-    <div >@malfunctions?.Count Malfunctions</div>
-    <div>
-        <button @onclick="(() => OrderByNew(true))">Newer</button>
-        <button @onclick="(() => OrderByNew(false))">Older</button>
+<div class="row">
+    <div class="malfunctions-count col-md-4 text-light mt-2" >@malfunctions?.Count Malfunctions</div>
+    <div class="col-md-4 col-xl-5 btn-group">
+        <button class="btn btn-outline-light @SortedByNewClass(true)" @onclick="(() => OrderByNew(true))">Newer</button>
+        <button class="btn btn-outline-light @SortedByNewClass(false)" @onclick="(() => OrderByNew(false))">Older</button>
     </div>
-    <div>
+    <div class="col-md-4 col-xl-3 search-box">
         <input type="text" placeholder="Search" 
-            aria-label="Search box"lab 
+            aria-label="Search box"lab class="form-control rounded-control"
             @oninput="((txt) => OnSearchInput((string)txt.Value))" />
     </div>
 </div>
 
-<div>
-    <div>
+<div class="row">
+    <div class="col-md-8 col-xl-9">
         @if (malfunctions is not null)
         {
             <Virtualize Items="@malfunctions" Context="m" OverscanCount="10">
-                <div>
-                    <div>
-                        <div>@m.Priority?.PriorityName</div>
+                <div class="malfunction-entry">
+                    <div class="@GetPriorityClass(m)">
+                        <div class="text-uppercase">@m.Priority?.PriorityName</div>
                     </div>
-                    <div>
-                        <div @onclick="(() => OpenDetails(m))">@m.Malfunction</div>
+                    <div class="malfunction-entry-text">
+                        <div class="malfunction-entry-text-title" @onclick="(() => OpenDetails(m))">@m.Malfunction</div>
                         <div>
-                            <div @onclick="(() => OpenDetails(m))">@m.Category?.CategoryName</div>
+                            <div class="malfunction-entry-text-category" @onclick="(() => OpenDetails(m))">@m.Category?.CategoryName</div>
                         </div>
                     </div>
-                    <div>
-                        <div>
+                    <div class="malfunction-entry-status @GetMalfunctionStatusClass(m)">
+                        <div class="malfunction-entry-status-text">
                             @m.MalfunctionStatus?.StatusName
                         </div>
                     </div>
@@ -51,37 +51,37 @@
         }
     </div>
 
-    <div>
+    <div class="col-md-4 col-xl-3">
         @if(categories is not null)
         {
-            <div>
-                <span>Category</span>
-                <div @onclick="(() => OnCategoryClick())">All</div>
+            <div class="categories">
+                <span class="text-uppercase fw-bold">Category</span>
+                <div class="@GetSelectedCategory()" @onclick="(() => OnCategoryClick())">All</div>
                 @foreach(var c in categories)
                 {
-                    <div @onclick="(() => OnCategoryClick(c.CategoryName))">@c.CategoryName</div>
+                    <div class="@GetSelectedCategory(c.CategoryName)" @onclick="(() => OnCategoryClick(c.CategoryName))">@c.CategoryName</div>
                 }
             </div>
         }
         @if(statuses is not null)
         {
-            <div>
-                <span>Status</span>
-                <div @onclick="(() => OnStatusClick())">All</div>
+            <div class="statuses">
+                <span class="text-uppercase fw-bold">Status</span>
+                <div class="@GetSelectedStatus()" @onclick="(() => OnStatusClick())">All</div>
             @foreach (var s in statuses)
             {
-                        <div @onclick="(() => OnStatusClick(s.StatusName))">@s.StatusName</div>
+                        <div class="@GetSelectedStatus(s.StatusName)" @onclick="(() => OnStatusClick(s.StatusName))">@s.StatusName</div>
             }
             </div>
         }
         @if (priorities is not null)
         {
-            <div>
-                <span>Priority</span>
-                <div @onclick="(() => OnPriorityClick())">All</div>
+            <div class="priorities">
+                <span class="text-uppercase fw-bold">Priority</span>
+                <div class="@GetSelectedPriority()" @onclick="(() => OnPriorityClick())">All</div>
                 @foreach (var p in priorities)
                 {
-                    <div @onclick="(() => OnPriorityClick(p.PriorityName))">@p.PriorityName</div>
+                    <div class="@GetSelectedPriority(p.PriorityName)" @onclick="(() => OnPriorityClick(p.PriorityName))">@p.PriorityName</div>
                 }
             </div>
         }
@@ -280,6 +280,102 @@
     private void OpenDetails(MalfunctionModel malfunction)
     {
         navManager.NavigateTo($"/Details/{malfunction.Id}");
+    }
+
+    private void LoadCreatePage(){
+        if(loggedInUser is not null)
+        {
+            navManager.NavigateTo("/Create");
+        }
+        else
+        {
+            navManager.NavigateTo("/MicrosoftIdentity/Account/SignIn", true);
+        }
+    }
+
+    private string SortedByNewClass(bool isNew)
+    {
+        if(isNew == isSortedByNew)
+        {
+            return "sort-selected";
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string GetPriorityClass(MalfunctionModel malfunction)
+    {
+        if(malfunction is null || malfunction.Priority is null)
+        {
+            return "malfunction-entry-prioriry-none";
+        }
+
+        string output = malfunction.Priority.PriorityName switch
+        {
+            "High Priority" => "malfunction-entry-priority-high",
+            "Medium Priority" => "malfunction-entry-priority-medium",
+            "Low Priority" => "malfunction-entry-priority-low",
+            _ => "malfunction-entry-priority-none"
+        };
+        return output;
+    }
+
+    private string GetMalfunctionStatusClass(MalfunctionModel malfunction)
+    {
+        if(malfunction is null || malfunction.MalfunctionStatus is null)
+        {
+            return "malfunction-entry-status-none";
+        }
+
+        string output = malfunction.MalfunctionStatus.StatusName switch
+        {
+            "Repaired" => "malfunction-entry-status-repaired",
+            "In Repair" => "malfunction-entry-status-in-repair",
+            "On Hold" => "malfunction-entry-status-on-hold",
+            "In queue" => "malfunction-entry-status-in-queue",
+            "Unrepairable" => "malfunction-entry-status-unrepairable",
+            _ => "malfunction-entry-status-none"
+        };
+
+        return output;
+    }
+
+    private string GetSelectedCategory(string category = "All")
+    {
+        if(category == selectedCategory)
+        {
+            return "selected-category";
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string GetSelectedStatus(string status = "All")
+    {
+        if(status == selectedStatus)
+        {
+            return "selected-status";
+        }
+        else
+        {
+            return "";
+        }
+    }
+
+    private string GetSelectedPriority(string priority = "All")
+    {
+        if(priority == selectedPriority)
+        {
+            return "selected-priority";
+        }
+        else
+        {
+            return "";
+        }
     }
 }
 

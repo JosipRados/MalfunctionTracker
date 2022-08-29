@@ -9,67 +9,66 @@
 @inject IUserData userData
 @inject NavigationManager navManager
 
-<h1>Make A Malfunction</h1>
+<h1 class="page-heading text-uppercase mb-4">Report A Malfunction</h1>
 
-<div>
-    <div>
-        <div>
-            <button @onclick = "ClosePage"></button>
+<div class="row justify-content-center create-form">
+    <div class="col-xl-8 col-lg-10 form-layout">
+        <div class="close-button-section">
+            <button class="btn btn-close" @onclick = "ClosePage"></button>
         </div>
         @if(categories is not null)
         {
+            <EditForm Model="newMalfunction" OnValidSubmit="CreateMalfunction">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <div class="input-section">
+                    <label class="form-label fw-bold text-uppercase" for="malfunction-text">Malfunction</label>
+                    <div class="input-description">What is the malfunction</div>
+                    <InputText class="form-control" id="malfunction-text" @bind-Value="newMalfunction.Malfunction"/>
+                </div>
 
+                <div class="input-section">
+                    <label class="form-label fw-bold text-uppercase" for="category">Category</label>
+                    <div class="input-description">Choose one category.</div>
+                    <div class="col-lg-8">
+                        <MyInputRadioGroup id="category" @bind-Value="newMalfunction.CategoryId">
+                            @foreach(var c in categories)
+                            {
+                                <div class="radio-item-group">
+                                    <InputRadio Value="@c.Id" id="@c.Id" />
+                                    <label class="radio-item" for="@c.Id">@c.CategoryName - @c.CategoryDescription</label>
+                                </div>
+                            }
+                        </MyInputRadioGroup>
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <label class="form-label fw-bold text-uppercase" for="priority">Prioriry</label>
+                    <div class="input-description">Choose one priority.</div>
+                    <div class="col-lg-8">
+                        <MyInputRadioGroup id="priority" @bind-Value="newMalfunction.PriorityId">
+                            @foreach (var p in priorities)
+                            {
+                                <div class="radio-item-group">
+                                    <InputRadio Value="@p.Id" id="@p.Id" />
+                                    <label class="radio-item" for="@p.Id">@p.PriorityName - @p.PriorityDescription</label>
+                                </div>
+                            }
+                        </MyInputRadioGroup>
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <label class="form-label fw-bold text-uppercase" for="description">Description</label>
+                    <div class="input-description">Describe malfunction</div>
+                    <InputText class="form-control" id="description" @bind-Value="newMalfunction.Description" />
+                </div>
+                <div class="center-children">
+                    <button class="btn btn-main btn-lg text-uppercase" type="submit">Report</button>
+                </div>
+            </EditForm>
         }
-        <EditForm Model="newMalfunction" OnValidSubmit="CreateMalfunction">
-            <DataAnnotationsValidator />
-            <ValidationSummary />
-            <div>
-                <label for="malfunction-text">Malfunction</label>
-                <div>What is the malfunction</div>
-                <InputText id="malfunction-text" @bind-Value="newMalfunction.Malfunction"/>
-            </div>
-
-            <div>
-                <label for="category">Category</label>
-                <div>Choose one category.</div>
-                <div>
-                    <MyInputRadioGroup id="category" @bind-Value="newMalfunction.CategoryId">
-                        @foreach(var c in categories)
-                        {
-                            <div>
-                                <InputRadio Value="@c.Id" id="@c.Id" />
-                                <label for="@c.Id">@c.CategoryName - @c.CategoryDescription</label>
-                            </div>
-                        }
-                    </MyInputRadioGroup>
-                </div>
-            </div>
-
-            <div>
-                <label for="priority">Prioriry</label>
-                <div>Choose one priority.</div>
-                <div>
-                    <MyInputRadioGroup id="priority" @bind-Value="newMalfunction.PriorityId">
-                        @foreach (var p in priorities)
-                        {
-                            <div>
-                                <InputRadio Value="@p.Id" id="@p.Id" />
-                                <label for="@p.Id">@p.PriorityName - @p.PriorityDescription</label>
-                            </div>
-                        }
-                    </MyInputRadioGroup>
-                </div>
-            </div>
-
-            <div>
-                <label for="description">Description</label>
-                <div>Describe malfunction</div>
-                <InputText id="description" @bind-Value="newMalfunction.Description" />
-            </div>
-            <div>
-                <button type="submit">Report</button>
-            </div>
-        </EditForm>
     </div>
 </div>
 

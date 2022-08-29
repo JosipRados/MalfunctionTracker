@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "N/sSwETPFXjUXKdlAfrLiy8TeK4yUm+6zPILyT+vqa8=",
+  "Hash": "kGOwhz7gdJuIEFFd/9E82FB/ZHdepDI5XtwAEgdR/YI=",
   "Source": "MalfunctionTrackerUI",
   "BasePath": "_content/MalfunctionTrackerUI",
   "Mode": "Default",
@@ -270,6 +270,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "C:\\Users\\Josip\\source\\repos\\MalfunctionTracker\\MalfunctionTrackerUI\\wwwroot\\images\\MalfunctionPageBackground.png",
+      "SourceId": "MalfunctionTrackerUI",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\Josip\\source\\repos\\MalfunctionTracker\\MalfunctionTrackerUI\\wwwroot\\",
+      "BasePath": "_content/MalfunctionTrackerUI",
+      "RelativePath": "images/MalfunctionPageBackground.png",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\images\\MalfunctionPageBackground.png"
     }
   ]
 }
