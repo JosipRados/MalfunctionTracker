@@ -6,17 +6,17 @@
 @inject NavigationManager navManager
 
 
-<h1>My Profile</h1>
+<h1 class="page-heading text-uppercase mb-4">My Profile</h1>
 
-<div>
-    <div>
-        <button @onclick="ClosePage"></button>
+<div class="row">
+    <div class="col-12 close-button-section">
+        <button class="btn btn-close btn-close-white mb-2" @onclick="ClosePage"></button>
     </div>
 </div>
 
-<div>
-    <h2>My Account</h2>
-    <p>
+<div class="form-layout mb-3">
+    <h2 class="my-malfunction-heading">My Account</h2>
+    <p class="my-malfunction-text">
         <a href="MicrosoftIdentity/Account/EditProfile">
             Edit my profile
         </a>
@@ -25,34 +25,34 @@
 
 @if(acknowledged?.Count > 0)
 {
-    <div>
-        <h2>Acknowledged Malfunctions</h2>
-        <p>These are malfunctions that are in queue for repairment.</p>
+    <div class="form-layout mb-3">
+        <h2 class="my-malfunction-heading">Acknowledged Malfunctions</h2>
+        <p class="my-malfunction-text">These are malfunctions that are in queue for repairment.</p>
 
         @foreach (var m in acknowledged)
         {
-            <hr />
-            <div>
+            <hr class="my-malfunction-separator" />
+            <div class="fw-bold malfunction-detail-malfunction">
                 @m.Malfunction
             </div>
-            <p>
+            <p class="my-malfunction-text">
                 @m.DateCreated.ToString("MM.dd.yyyy")
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Priority.PriorityName
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Category.CategoryName
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Description
             </p>
             @if (m.MalfunctionStatus is not null)
             {
-                <div>
+                <div class="fw-bold malfunction-detail-malfunction">
                     @m.MalfunctionStatus.StatusName
                 </div>
-                <p>
+                <p class="my-malfunction-text">
                     @((MarkupString)m.MaintenanceNotes)
                 </p>
             }
@@ -62,34 +62,34 @@
 
 @if (archived?.Count > 0)
 {
-    <div>
-        <h2>Archived Malfunctions</h2>
-        <p>These are malfunctions that are archived.</p>
+    <div class="form-layout mb-3">
+        <h2 class="my-malfunction-heading">Archived Malfunctions</h2>
+        <p class="my-malfunction-text">These are malfunctions that are archived.</p>
 
         @foreach (var m in archived)
         {
-            <hr />
-            <div>
+            <hr class="my-malfunction-separator" />
+            <div class="fw-bold malfunction-detail-malfunction">
                 @m.Malfunction
             </div>
-            <p>
+            <p class="my-malfunction-text">
                 @m.DateCreated.ToString("MM.dd.yyyy")
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Priority.PriorityName
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Category.CategoryName
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Description
             </p>
             @if (m.MalfunctionStatus is not null)
             {
-                <div>
+                <div class="fw-bold malfunction-detail-malfunction">
                     @m.MalfunctionStatus.StatusName
                 </div>
-                <p>
+                <p class="my-malfunction-text">
                     @((MarkupString)m.MaintenanceNotes)
                 </p>
             }
@@ -99,34 +99,34 @@
 
 @if (pending?.Count > 0)
 {
-    <div>
-        <h2>Pending Malfunctions</h2>
-        <p>These are malfunctions that are pending acknowledgment.</p>
+    <div class="form-layout mb-3">
+        <h2 class="my-malfunction-heading">Pending Malfunctions</h2>
+        <p class="my-malfunction-text">These are malfunctions that are pending acknowledgment.</p>
 
         @foreach (var m in pending)
         {
-            <hr />
-            <div>
+            <hr class="my-malfunction-separator" />
+            <div class="fw-bold malfunction-detail-malfunction">
                 @m.Malfunction
             </div>
-            <p>
+            <p class="my-malfunction-text">
                 @m.DateCreated.ToString("MM.dd.yyyy")
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Priority.PriorityName
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Category.CategoryName
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Description
             </p>
             @if (m.MalfunctionStatus is not null)
             {
-                <div>
+                <div class="fw-bold malfunction-detail-malfunction">
                     @m.MalfunctionStatus.StatusName
                 </div>
-                <p>
+                <p class="my-malfunction-text">
                     @((MarkupString)m.MaintenanceNotes)
                 </p>
             }
@@ -136,34 +136,34 @@
 
 @if (rejected?.Count > 0)
 {
-    <div>
-        <h2>Rejected Malfunctions</h2>
-        <p>These are malfunctions that are rejected by maintenance.</p>
+    <div class ="form-layout mb-3">
+        <h2 class="my-malfunction-heading">Rejected Malfunctions</h2>
+        <p class="my-malfunction-text">These are malfunctions that are rejected by maintenance.</p>
 
         @foreach (var m in rejected)
         {
-            <hr />
-            <div>
+            <hr class="my-malfunction-separator" />
+            <div class="fw-bold malfunction-detail-malfunction">
                 @m.Malfunction
             </div>
-            <p>
+            <p class="my-malfunction-text">
                 @m.DateCreated.ToString("MM.dd.yyyy")
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Priority.PriorityName
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Category.CategoryName
             </p>
-            <p>
+            <p class="my-malfunction-text">
                 @m.Description
             </p>
             @if (m.MalfunctionStatus is not null)
             {
-                <div>
+                <div class="fw-bold malfunction-detail-malfunction">
                     @m.MalfunctionStatus.StatusName
                 </div>
-                <p>
+                <p class="my-malfunction-text">
                     @((MarkupString)m.MaintenanceNotes)
                 </p>
             }

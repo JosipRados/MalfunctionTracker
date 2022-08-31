@@ -413,3 +413,281 @@ a, .btn-link {
         border-color: #FFFFFF;
         border-width: 3px;
     }
+
+.malfunction-detail-row {
+    --bs-gutter-x: 0;
+}
+
+.malfunction-detail {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    padding: 0;
+}
+
+.malfunction-detail-priority-high,
+.malfunction-detail-priority-medium,
+.malfunction-detail-priority-low {
+    border: 3px solid #DDDDDD;
+    border-radius: 10px;
+    text-align: center;
+    line-height: 1rem;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.malfunction-detail-priority-high {
+    background-color: none;
+    color: red;
+    border-color: #DDDDDD;
+}
+
+.malfunction-detail-priority-medium {
+    background-color: none;
+    color: forestgreen;
+    border-color: #DDDDDD;
+}
+
+.malfunction-detail-priority-low {
+    background-color: none;
+    color: greenyellow;
+    border-color: #DDDDDD;
+}
+
+.malfunction-detail-date {
+    text-align: center;
+    padding-top: 10px;
+    padding-bottom: 20px;
+}
+
+.malfunction-detail-text {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    padding-left: 27px;
+    padding-top: 0;
+    padding-right: 10px;
+    padding-bottom: 10px;
+}
+
+.malfunction-detail-malfunction {
+    font-size: 1.25rem;
+}
+
+.malfunction-detail-author {
+    color: #A9A9A9;
+}
+
+.malfunction-results {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.malfunction-detail-status-repaired {
+    background-color: none;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+.malfunction-detail-status-in-repair {
+    background-color: none;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+.malfunction-detail-status-on-hold {
+    background-color: none;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+.malfunction-detail-status-in-queue {
+    background-color: none;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+.malfunction-detail-status-unrepairable {
+    background-color: none;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+.malfunction-detail-status-none {
+    background-color: none;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+}
+
+.malfunction-detail-status-section {
+    padding: 1.5rem;
+}
+
+.malfunction-detail.selected-status {
+    flex-grow: 1;
+}
+
+.malfunction-detail-owner-notes {
+    padding-bottom: 20px;
+}
+
+.malfunction {
+    background-color: none;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.btn-approve,
+.btn-reject {
+    width: 100%;
+    font-family: 'Montserrat', sans-serif;
+    border-radius: 10px;
+    border-width: 3px;
+}
+
+.btn-approve {
+    color: #FFFFFF;
+    background-color: none;
+    border-color: #DDDDDD;
+    margin-bottom:5px;
+}
+
+    .btn-approve:hover {
+        color: forestgreen;
+        border-color: forestgreen;
+    }
+
+.btn-reject {
+    color: #FFFFFF;
+    background-color: none;
+    border-color: #DDDDDD;
+}
+
+    .btn-reject:hover {
+        color: red;
+        border-color: red;
+    }
+
+.approval-edit-form {
+    display: flex;
+}
+
+.approval-edit-field {
+    flex: 1;
+    border-radius: 10px;
+}
+
+.malfunction-edit-approve {
+    color: #B5D43A;
+}
+
+    .malfunction-edit-approve:hover {
+        font-weight: 700;
+    }
+
+.malfunction-edit-reject {
+    color: #E9354C;
+}
+
+    .malfunction-edit-reject:hover {
+        font-weight: 700;
+    }
+
+.malfunction-edit-icon {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}
+
+    .malfunction-edit-icon:hover {
+        color: #39BAD8;
+    }
+
+.my-malfunction-heading {
+    color: #FFFFFF;
+    text-transform: uppercase;
+}
+
+.my-malfunction-text {
+    margin-bottom: 0;
+    padding-left: 1rem;
+}
+
+.my-malfunction-separator {
+    color: #A9A9A9;
+    height: 2px;
+    opacity: 1;
+}
+
+.malfunction-entry-bottom {
+    display: flex;
+}
+
+.btn-archive {
+    border: 0;
+    background-color: none;
+    padding: 0 10px;
+    flex: unset;
+}
+
+    .btn-archive:hover {
+        color: #B5D43A;
+    }
+
+.btn-archive-confirm,
+.btn-archive-reject {
+    text-transform: uppercase;
+    color: darkgrey;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex: 1;
+}
+
+.btn-archive-confirm:hover{
+    color:#FFFFFF;
+}
+
+.btn-archive-reject:hover {
+    color: #FFFFFF;
+}
+        
+.btn-archive-confirm {
+    color: #E9354C
+}
+
+.admin-details {
+    margin-top: 20px;
+}
+
+.admin-set-statuses {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+}
+
+.btn-status-repaired:hover {
+    color: #B5D43A;
+}
+
+.btn-status-in-repair:hover {
+    color: #B5D43A;
+}
+
+.btn-status-in-queue:hover {
+    color: #B5D43A;
+}
+
+.btn-status-on-hold:hover {
+    color: #B5D43A;
+}
+
+.btn-status-unrepairable:hover {
+    color: #B5D43A;
+}
+
+

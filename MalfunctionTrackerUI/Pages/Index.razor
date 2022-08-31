@@ -1,4 +1,5 @@
 ﻿@page "/"
+@attribute [Authorize]
 @inject AuthenticationStateProvider authProvider
 @inject ICategoryData categoryData
 @inject IStatusData statusData
@@ -37,9 +38,28 @@
                     </div>
                     <div class="malfunction-entry-text">
                         <div class="malfunction-entry-text-title" @onclick="(() => OpenDetails(m))">@m.Malfunction</div>
-                        <div>
-                            <div class="malfunction-entry-text-category" @onclick="(() => OpenDetails(m))">@m.Category?.CategoryName</div>
-                        </div>
+                        @if(archivingMalfunction is null || archivingMalfunction.Id != m.Id)
+                        {
+                            <div class="malfunction-entry-bottom">
+                                <div class="malfunction-entry-text-category" @onclick="(() => OpenDetails(m))">@m.Category?.CategoryName</div>
+                            <AuthorizeView Policy="Admin">
+                                <button @onclick="(() => archivingMalfunction = m)" class="btn malfunction-entry-text-category btn-archive">
+                                    Archive
+                                </button>
+                            </AuthorizeView>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="malfunction-entry-bottom">
+                                <button class="btn btn-archive btn-archive-confirm" @onclick="ArchiveMalfunction">
+                                    Confirm
+                                </button>
+                                <button class="btn btn-archive btn-archive-reject" @onclick="(() => archivingMalfunction = null)">
+                                    Reject
+                                </button>
+                            </div>
+                        }
                     </div>
                     <div class="malfunction-entry-status @GetMalfunctionStatusClass(m)">
                         <div class="malfunction-entry-status-text">
@@ -100,6 +120,7 @@
     private List<StatusModel> statuses;
     private List<PriorityModel> priorities;
     private UserModel loggedInUser;
+    private MalfunctionModel archivingMalfunction;
 
     private string selectedCategory = "All";
     private string selectedStatus = "All";
@@ -113,6 +134,15 @@
         statuses = await statusData.GetAllStatuses();
         priorities = await priorityData.GetAllPriorities();
         await LoadAndVerifyUser();
+    }
+
+    private async Task ArchiveMalfunction()
+    {
+        archivingMalfunction.Archived = true;
+        await malfunctionData.UpdateMalfunction(archivingMalfunction);
+        malfunctions.Remove(archivingMalfunction);
+        archivingMalfunction = null;
+        //await FilterMalfunctions();
     }
 
     private async Task LoadAndVerifyUser()

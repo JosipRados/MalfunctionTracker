@@ -1,33 +1,38 @@
 ﻿@page "/details/{Id}"
-@inject IMalfunctionData malfunctionData
 @inject NavigationManager navManager
+@inject AuthenticationStateProvider authProvider
+@inject IUserData userData
+@inject IStatusData statusData
+@inject IMalfunctionData malfunctionData
 
 
-<h3>Details</h3>
+<h3 class="page-heading text-uppercase mb-4">Details</h3>
 
-<div>
-    <div>
+<div class="row justify-content-center detail-form">
+    <div class="col-xl-8 col-lg-10 form-layout">
         @if(malfunction is not null)
         {
-            <div>
-                <div>
+            <div class="row malfunction-detail-row">
+                <div class="col-11 malfunction-detail">
                     <div>
-                        <div>@malfunction.DateCreated.ToString("MM.dd.yyyy")</div>
+                        <div class="@GetPriorityClass(malfunction)">
+                            <div>@malfunction.Priority.PriorityName</div>
+                        </div>
+                        <div class="malfunction-detail-date">
+                            <div>@malfunction.DateCreated.ToString("MM.dd.yyyy")</div>
+                        </div>
+                    </div>
+                    <div class="malfunction-detail-text">
+                        <div class="fw-bold mb-2 malfunction-detail-malfunction">@malfunction.Malfunction</div>
+                        <div class="mb-2 malfunction-detail-author">@malfunction.User.DisplayName</div>
+                        <div class="mb-2">@malfunction.Description</div>
+                        <div class="malfunction-entry-text-category">
+                            @malfunction.Category.CategoryName
+                        </div>
                     </div>
                 </div>
-                <div>
-                    <div>@malfunction.Malfunction</div>
-                    <div>@malfunction.User.DisplayName</div>
-                    <div>@malfunction.Description</div>
-                    <div>
-                        @malfunction.Category.CategoryName
-                    </div>
-                    <div>
-                        @malfunction.Priority.PriorityName
-                    </div>
-                </div>
-                <div>
-                    <button @onclick="ClosePage">Close</button>
+                <div class="col-1 close-button-section">
+                    <button class="btn btn-close btn-close-white" @onclick="ClosePage"></button>
                 </div>
             </div>
         }
@@ -36,19 +41,71 @@
 
 @if (malfunction?.MalfunctionStatus is not null)
 {
-    <div>
-        <div>
-            <div></div>
-            <div>
-                <div>
+    <div class="row justify-content-center detail-form">
+        <div class="col-xl-8 col-lg-10 malfunction-results form-layout">
+            <div class="@GetStatusClass()"></div>
+            <div class="malfunction-detail-status-section">
+                <div class="malfunction-detail-status fw-bold mb-2 malfunction-detail-malfunction">
                     @malfunction.MalfunctionStatus.StatusName
                 </div>
-                <div>
+                <div class="malfunction-detail-owner-notes">
                     @((MarkupString)malfunction.MaintenanceNotes)
                 </div>
             </div>
         </div>
     </div>
+}
+
+@if (malfunction is not null)
+{
+    <AuthorizeView Policy="Admin">
+        <div class="row justify-content-center detail-form">
+            <div class="col-xl-8 col-lg-10 form-layout admin-details">
+                <div>
+                    <div class="malfunction-detail-status-in-queue fw-bold mb-2 malfunction-detail-malfunction">Set Status</div>
+                    @if (string.IsNullOrWhiteSpace(settingStatus))
+                    {
+                        <div class="admin-set-statuses">
+                            <button @onclick="@(() => settingStatus = "Repaired")" class="btn malfunction-entry-text-category btn-archive btn-status-repaired">Repaired</button>
+                        
+                            <button @onclick="@(() => settingStatus = "In Repair")" class="btn malfunction-entry-text-category btn-archive btn-status-in-repair">In Repair</button>
+                        
+                            <button @onclick="@(() => settingStatus = "In queue")" class="btn malfunction-entry-text-category btn-archive btn-status-in-queue">In Queue</button>
+                        
+                            <button @onclick="@(() => settingStatus = "On Hold")" class="btn malfunction-entry-text-category btn-archive btn-status-on-hold">On Hold</button>
+                        
+                            <button @onclick="@(() => settingStatus = "Unrepairable")" class="btn malfunction-entry-text-category btn-archive btn-status-unrepairable">Unrepairable</button>
+                        </div>
+                    }
+                    else if (settingStatus == "Repaired")
+                    {
+                        @*<div>
+                            <input @bind="urlText" class="form-control rounded-control" type="text" placeholder="Url" aria-lable="Content Url" />
+                        </div>*@
+                        <div class="malfunction-entry-bottom">
+                            <button class="btn btn-archive-confirm" @onclick="CompleteSetStatus">
+                                Confirm
+                            </button>
+                            <button class="btn btn-archive-reject" @onclick="(() => settingStatus = null)">
+                                Reject
+                            </button>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="malfunction-entry-bottom">
+                            <button class="btn btn-archive-confirm" @onclick="CompleteSetStatus">
+                                Confirm
+                            </button>
+                            <button class="btn btn-archive-reject" @onclick="(() => settingStatus = null)">
+                                Reject
+                            </button>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </AuthorizeView>
 }
 
 
@@ -58,14 +115,94 @@
     public string Id { get; set; }
 
     private MalfunctionModel malfunction;
+    private UserModel loggedInUser;
+
+    private List<StatusModel> statuses;
+    private string settingStatus = "";
+    private string urlText = "";
 
     protected async override Task OnInitializedAsync()
     {
         malfunction = await malfunctionData.GetMalfunction(Id);
+        loggedInUser = await authProvider.GetUserFromAuth(userData);
+        statuses = await statusData.GetAllStatuses();
+    }
+
+    private async Task CompleteSetStatus()
+    {
+        switch (settingStatus)
+        {
+            case "Repaired":
+                if (string.IsNullOrWhiteSpace(urlText))
+                {
+                    return;
+                }
+                malfunction.MalfunctionStatus = statuses.Where(m => m.StatusName.ToLower() == settingStatus.ToLower()).First();
+                malfunction.MaintenanceNotes = "This malfunction is repaired.";
+                break;
+            case "In Repair":
+                malfunction.MalfunctionStatus = statuses.Where(m => m.StatusName.ToLower() == settingStatus.ToLower()).First();
+                malfunction.MaintenanceNotes = "This malfunction is currently in repair.";
+                break;
+            case "In queue":
+                malfunction.MalfunctionStatus = statuses.Where(m => m.StatusName.ToLower() == settingStatus.ToLower()).First();
+                malfunction.MaintenanceNotes = "This malfunction is in queue to be repaired.";
+                break;
+            case "On Hold":
+                malfunction.MalfunctionStatus = statuses.Where(m => m.StatusName.ToLower() == settingStatus.ToLower()).First();
+                malfunction.MaintenanceNotes = "This malfunction is on hold because of the complications, we will solve them soon.";
+                break;
+            case "Unrepairable":
+                malfunction.MalfunctionStatus = statuses.Where(m => m.StatusName.ToLower() == settingStatus.ToLower()).First();
+                malfunction.MaintenanceNotes = "This malfunction can not be fixed.";
+                break;
+            default:
+                return;
+        }
+
+        settingStatus = null;
+        await malfunctionData.UpdateMalfunction(malfunction);
     }
 
     private void ClosePage()
     {
         navManager.NavigateTo("/");
+    }
+
+    private string GetPriorityClass(MalfunctionModel malfunction)
+    {
+        if (malfunction is null || malfunction.Priority is null)
+        {
+            return "malfunction-entry-prioriry-none";
+        }
+
+        string output = malfunction.Priority.PriorityName switch
+        {
+            "High Priority" => "malfunction-detail-priority-high",
+            "Medium Priority" => "malfunction-detail-priority-medium",
+            "Low Priority" => "malfunction-detail-priority-low",
+            _ => "malfunction-detail-priority-none"
+        };
+        return output;
+    }
+
+    private string GetStatusClass()
+    {
+        if (malfunction is null || malfunction.MalfunctionStatus is null)
+        {
+            return "malfunction-detail-status-none";
+        }
+
+        string output = malfunction.MalfunctionStatus.StatusName switch
+        {
+            "Repaired" => "malfunction-detail-status-repaired",
+            "In Repair" => "malfunction-detail-status-in-repair",
+            "On Hold" => "malfunction-detail-status-on-hold",
+            "In queue" => "malfunction-detail-status-in-queue",
+            "Unrepairable" => "malfunction-detail-status-unrepairable",
+            _ => "malfunction-detail-status-none"
+        };
+
+        return output;
     }
 }
